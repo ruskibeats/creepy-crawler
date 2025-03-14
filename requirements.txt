@@ -1,0 +1,34 @@
+# Core dependencies
+fastapi>=0.109.1
+uvicorn>=0.27.0
+pydantic>=2.10.0
+aiohttp>=3.9.3
+
+# Crawler dependencies
+selenium>=4.17.2
+webdriver-manager>=4.0.1
+selenium-wire>=5.1.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.3
+
+# System utilities
+psutil>=5.9.8
+requests>=2.31.0
+python-multipart>=0.0.9
+
+# Logging
+structlog>=24.1.0
+python-json-logger>=2.0.7
+
+# Type hints
+typing-extensions>=4.8.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# LLM integration
+openai>=1.0.0
+
+# Batch processing
+asyncio>=3.4.3
+aiofiles>=23.2.1

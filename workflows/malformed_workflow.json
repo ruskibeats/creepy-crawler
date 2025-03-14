@@ -1,0 +1,39 @@
+{
+  "id": "malformed123"
+  "name": "Malformed Workflow"
+  "nodes": [
+    {
+      "id": "node1"
+      "name": "Webhook"
+      "type": "n8n-nodes-base.webhook"
+      "position": [300, 80]
+      "parameters": {
+        "path": "receive-data"
+        "typeVersion": 1
+      }
+    }
+    {
+      "name": "HTTP Request"
+      "type": "n8n-nodes-base.httpRequest"
+      "position": [500, 80]
+      "parameters": {
+        "url": "https://example.com/api"
+        "method": "POST"
+        "authentication": "none"
+      }
+    }
+  ]
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request"
+            "type": "main"
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

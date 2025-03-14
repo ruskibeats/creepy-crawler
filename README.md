@@ -1,108 +1,70 @@
-# Crawl4AI Project
+# Creepy Crawler for n8n Workflows
+
+A web crawling and scraping system designed to extract structured data from websites, with special support for n8n workflows.
 
 ## Overview
 
-Crawl4AI is a web crawling and scraping API designed to extract structured data from websites, with special support for n8n workflows. This project provides comprehensive tools for extracting, validating, and analyzing workflow data.
+Creepy Crawler is built on top of the Crawl4AI framework and specializes in:
 
-## Project Structure
+1. Extracting n8n workflows from websites
+2. Validating and analyzing workflow JSON files
+3. Generating comprehensive documentation for workflows
+4. Processing workflows in batch mode
 
-The project has been reorganized into a more maintainable structure:
+## Features
 
-```
-/
-├── src/                    # Source code
-│   ├── api/                # API server components
-│   │   ├── api_server.py   # FastAPI-based REST API
-│   │   └── rate_limiter.py # Request rate limiting
-│   ├── crawler/            # Web crawling components
-│   │   ├── crawler_script.py # Selenium-based crawler
-│   │   └── extract_workflow.py # Workflow extraction
-│   ├── processors/         # Data processing components
-│   │   ├── n8n_workflow_processor.py # Workflow processing
-│   │   └── get_workflow.py # Workflow fetching
-│   ├── validators/         # Validation components
-│   │   ├── n8n_validator.py # Workflow validation
-│   │   └── validate_n8n_json_llm.py # LLM-based validation
-│   └── utils/              # Shared utilities
-│       ├── common.py       # Common functions
-│       ├── config.py       # Centralized configuration
-│       └── logging_config.py # Logging configuration
-├── tests/                  # Test files
-├── docs/                   # Documentation
-├── scripts/                # Shell scripts
-├── cline_docs/             # Project management documentation
-├── api/                    # API-related files
-├── config/                 # Configuration files
-├── db/                     # Database files
-├── logs/                   # Log files
-├── workflows/              # Workflow JSON files
-└── backups/                # Backup files
+- **Workflow Extraction**: Extract n8n workflows from websites
+- **Validation & Analysis**: Automatically validate, fix, and analyze workflow JSON
+- **LLM Integration**: Use advanced language models to analyze and improve workflows
+- **Batch Processing**: Process multiple workflows in batch mode
+- **Comprehensive Documentation**: Generate detailed README files for each workflow
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/ruskibeats/creepy-crawler.git
+cd creepy-crawler
 ```
 
-## Key Improvements
+2. Create a virtual environment and install dependencies:
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
-1. **Modular Design**: Code is now organized into logical modules with clear responsibilities
-2. **Shared Utilities**: Common functionality has been extracted into shared modules
-3. **Centralized Configuration**: All configuration is now managed through a hierarchical config class
-4. **Clean Root Directory**: The root directory is now clean and organized
+## Usage
 
-## Getting Started
+### Process a Single Workflow
 
-1. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
+```bash
+source venv/bin/activate
+python -m src.processors.n8n_workflow_processor [workflow_id]
+```
 
-2. Start the API server:
-   ```bash
-   ./scripts/start_server.sh
-   ```
+### Process Multiple Workflows
 
-3. Process a single workflow:
-   ```bash
-   python -m src.processors.n8n_workflow_processor <workflow_id>
-   ```
+```bash
+source venv/bin/activate
+python -m src.processors.batch_workflow_processor --urls-file [path_to_urls_file]
+```
 
-4. Process a batch of workflows with adaptive resource management:
-   ```bash
-   # Generate a test URLs file with 10 URLs
-   ./scripts/generate_urls_file.py --output urls.txt --count 10
-   
-   # Process the URLs with adaptive concurrency
-   ./scripts/run_batch_processor.sh --urls-file urls.txt --initial-concurrency 2 --max-concurrency 5
-   
-   # Enable API endpoint for monitoring and control
-   ./scripts/run_batch_processor.sh --urls-file urls.txt --enable-api
-   ```
+### Analyze a Local Workflow File
 
-## Batch Processing Features
+```bash
+source venv/bin/activate
+python test_template.py --workflow [path_to_workflow_file]
+```
 
-The batch processing system includes:
+## Outputs
 
-1. **Adaptive Resource Management**
-   - Dynamically adjusts concurrency based on system performance
-   - Starts conservatively and scales up/down as needed
-   - Monitors CPU, memory, and processing times
+The system generates the following outputs for each workflow:
+- Workflow JSON file
+- Metadata JSON file
+- Analysis file
+- README.md with comprehensive documentation
 
-2. **Self-Healing Capabilities**
-   - Automatically retries failed URLs
-   - Creates checkpoints for recovery
-   - Tracks completed URLs to avoid duplication
+## License
 
-3. **Monitoring and Control**
-   - Optional API endpoint for status monitoring
-   - Pause/resume processing via API
-   - Detailed statistics and progress tracking
-
-## Documentation
-
-See the `docs/` directory for detailed documentation on each component.
-
-## Project Management
-
-The `cline_docs/` directory contains project management documentation:
-- `projectRoadmap.md`: High-level goals and features
-- `currentTask.md`: Current objectives and next steps
-- `techStack.md`: Key technology choices
-- `codebaseSummary.md`: Overview of project structure and components
-# creepy-crawler
+MIT

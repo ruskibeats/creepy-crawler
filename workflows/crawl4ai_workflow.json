@@ -1,0 +1,251 @@
+{
+  "name": "Crawl4AI Agent",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "b90d81a3-0920-419e-bdee-e227ac106383",
+      "name": "When clicking 'Test workflow'",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [760, 300]
+    },
+    {
+      "parameters": {
+        "url": "https://ai.pydantic.dev/sitemap.xml",
+        "options": {}
+      },
+      "id": "e6033590-2727-4b81-a27b-3dd45dcfbb79",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [960, 160]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "1db8ab3d-4594-45cf-8256-d05d7f7697f7",
+      "name": "XML",
+      "type": "n8n-nodes-base.xml",
+      "typeVersion": 1,
+      "position": [1160, 360]
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "urlset.url",
+        "options": {}
+      },
+      "id": "8eeca9bb-0c16-4ebf-b9f4-db481e963c41",
+      "name": "Split Out",
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [1320, 160]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "460dcd6c-d26c-407c-ad06-016cc800609d",
+      "name": "Loop Over Items",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [1560, 260]
+    },
+    {
+      "parameters": {},
+      "id": "8d35dd97-4926-4c22-989a-008d974f9799",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [1980, 260],
+      "webhookId": "9af87c5e-b07f-48dc-9ca8-61b471a24cad"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8000/n8n/crawl",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "start_url",
+              "value": "={{ $json.loc }}"
+            },
+            {
+              "name": "max_depth",
+              "value": "3"
+            },
+            {
+              "name": "max_pages",
+              "value": "100"
+            },
+            {
+              "name": "save_screenshots",
+              "value": "true"
+            },
+            {
+              "name": "save_html",
+              "value": "true"
+            },
+            {
+              "name": "memory_threshold",
+              "value": "90.0"
+            },
+            {
+              "name": "max_sessions",
+              "value": "10"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b644ca6c-33fd-40bb-902f-79025d65b1a3",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1780, 260]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "9d90c1ce-590e-40a5-ae8c-d92326032975",
+              "value1": "={{ $json.status }}",
+              "value2": "success",
+              "operation": "equal"
+            }
+          ]
+        }
+      },
+      "id": "83e7b017-4196-4e59-b255-921f88b2c5ef",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [2420, 260]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "schema": "public",
+        "table": "page_chunks",
+        "columns": "url,content,embedding,metadata",
+        "additionalFields": {}
+      },
+      "id": "45ca72cc-063c-4dfa-9957-fd9d56647374",
+      "name": "Supabase",
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [2660, 40],
+      "credentials": {
+        "supabaseApi": {
+          "id": "1",
+          "name": "Supabase account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "b4054e7f-b429-4f4c-9d55-3004bfd9e1ce",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [1420, -500],
+      "webhookId": "0949763f-f3f7-46bf-8676-c050d92e6966"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "105b2092-36d3-45d6-9686-673f886933f8",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [1580, -280],
+      "credentials": {
+        "openAiApi": {
+          "id": "1",
+          "name": "OpenAI account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "name": "pydantic_ai_docs",
+        "description": "Retrieves data related to Pydantic AI using their documentation."
+      },
+      "id": "95207afc-1362-401f-9ea0-4d9c61bf9b13",
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [2060, -380]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "c697f5fe-6d78-4b93-b4f9-a86b7b0aea03",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [1680, -500]
+    }
+  ],
+  "connections": {
+    "When clicking 'Test workflow'": {
+      "main": [["HTTP Request"]]
+    },
+    "HTTP Request": {
+      "main": [["XML"]]
+    },
+    "XML": {
+      "main": [["Split Out"]]
+    },
+    "Split Out": {
+      "main": [["Loop Over Items"]]
+    },
+    "Loop Over Items": {
+      "main": [[],["HTTP Request1"]]
+    },
+    "Wait": {
+      "main": [["If"]]
+    },
+    "HTTP Request1": {
+      "main": [["Wait"]]
+    },
+    "If": {
+      "main": [["Supabase"]]
+    },
+    "When chat message received": {
+      "main": [["AI Agent"]]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [["AI Agent"]]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [["AI Agent"]]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": ["crawl4ai", "web-scraping", "rag"],
+  "triggerCount": 1,
+  "versionId": "1"
+} 

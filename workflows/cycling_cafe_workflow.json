@@ -1,0 +1,256 @@
+{
+  "nodes": [
+    {
+      "id": "1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [100, 200],
+      "parameters": {
+        "url": "=data.json",
+        "method": "GET",
+        "authentication": "none",
+        "responseFormat": "json",
+        "options": {
+          "allowUnauthorizedCerts": false,
+          "queryParameterArrays": "indices",
+          "redirect": {
+            "redirect": {
+              "followRedirects": true,
+              "maxRedirects": 21
+            }
+          },
+          "response": {
+            "response": {
+              "fullResponse": false,
+              "responseFormat": "json",
+              "jsonParseMode": "strict"
+            }
+          },
+          "proxy": {
+            "proxy": {
+              "enabled": false
+            }
+          }
+        },
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "exclude_images",
+              "value": "true"
+            },
+            {
+              "name": "images_enabled",
+              "value": "false"
+            },
+            {
+              "name": "fetch_resources",
+              "value": "text"
+            }
+          ]
+        }
+      },
+      "name": "Fetch-ScrapedData"
+    },
+    {
+      "id": "2",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [300, 200],
+      "parameters": {
+        "functionCode": "// Extract cafe data from the scraped content\nconst scrapedData = $input.item.json;\nlet cafes = [];\n\n// Helper function to clean scraped data\nfunction cleanScrapedData(data) {\n  if (!data) return data;\n  \n  // Clean up empty text elements\n  if (data.metadata && data.metadata.links) {\n    data.metadata.links = data.metadata.links.filter(link => {\n      // Filter out links with empty text\n      return link.text && link.text.trim() !== '';\n    });\n  }\n  \n  // Clean up empty header elements\n  if (data.metadata && data.metadata.headers) {\n    // Clean h1 headers\n    if (data.metadata.headers.h1) {\n      data.metadata.headers.h1 = data.metadata.headers.h1.filter(h => h && h.trim() !== '');\n    }\n    \n    // Clean h2 headers\n    if (data.metadata.headers.h2) {\n      data.metadata.headers.h2 = data.metadata.headers.h2.filter(h => h && h.trim() !== '');\n    }\n    \n    // Clean h3 headers\n    if (data.metadata.headers.h3) {\n      data.metadata.headers.h3 = data.metadata.headers.h3.filter(h => h && h.trim() !== '');\n    }\n  }\n  \n  return data;\n}\n\n// Process and clean the scraped data\nif (scrapedData && scrapedData[0] && scrapedData[0].urls && scrapedData[0].urls.internal) {\n  // Clean each internal URL data\n  scrapedData[0].urls.internal = scrapedData[0].urls.internal.map(item => {\n    if (item.data) {\n      item.data = cleanScrapedData(item.data);\n    }\n    return item;\n  });\n  \n  const internalUrls = scrapedData[0].urls.internal;\n  \n  for (const item of internalUrls) {\n    if (item.url.includes('newtons-bakery-cafe')) {\n      // Extract data for Newtons Bakery Cafe\n      const cafeData = {\n        name: \"Newtons Bakery Cafe\",\n        description: \"Worcestershire bakery known for their sweet cookie pies, cakes and tray bakes. Do try the mini egg blondie or filled white chocolate cookie, our favourites\",\n        address: \"9a Cadbury House, Blackminster Business Park, Blackminster\",\n        city: \"Evesham\",\n        region: \"Worcestershire\",\n        postal_code: \"WR11 7RE\",\n        country: \"United Kingdom\",\n        phone: \"01386 801802\",\n        website: \"https://newtonsbakery.co.uk/\",\n        instagram_url: \"https://www.instagram.com/newtonsbakerycafe\",\n        facebook_url: \"https://www.facebook.com/newtonsbakerycafe\",\n        opening_hours: \"9:00 - 16:00 (Mon - Sat), closed (Sun)\",\n        has_vegetarian: true,\n        has_gluten_free: true,\n        has_bike_racks: true,\n        has_outdoor_seating: true,\n        menu_highlights: \"Americano (£2.60), cappuccino (£3.40), flat white (£3.30), tea (pot, £2.90), hot chocolate (£3.40), breakfast baps (£3.75), full breakfast bap (£4.75), cooked breakfast (£6.50), toast (£3.00), beans on toast (£5.00), porridge (£2.65), sandwiches (from £3.95), toasties (from £5.25), jacket potatoes (from £6.00), cakes (from £3.00), cookies (from £2.50)\",\n        notes: \"Worcestershire bakery famed for their filled cookie pies and tray-bakes, situated in the rolling countryside of the Vale of Evesham. Baked on-site, sweet treats include cherry shortbread, salted caramel flapjack, caramel shortbread, mini egg cookie slice, cherry blondie, caramel brownie, coffee cake.\",\n        coffee_rating: 5,\n        food_rating: 5,\n        value_rating: 5,\n        overall_rating: 5,\n        last_updated: \"2025-02-25\"\n      };\n      cafes.push(cafeData);\n    }\n  }\n}\n\n// Add other cafes from the structured data\nif (scrapedData && scrapedData[0] && scrapedData[0].urls && scrapedData[0].urls.internal) {\n  const homePageData = scrapedData[0].urls.internal.find(item => item.url === \"https://www.cakerider.uk/\");\n  \n  if (homePageData && homePageData.data && homePageData.data.structured_data && homePageData.data.structured_data.cafes) {\n    const otherCafes = homePageData.data.structured_data.cafes;\n    \n    // Add McCowans\n    if (otherCafes.find(cafe => cafe.name === \"McCowans\")) {\n      cafes.push({\n        name: \"McCowans\",\n        description: \"Popular cycling cafe with excellent coffee and homemade cakes\",\n        city: \"Edinburgh\",\n        region: \"Scotland\",\n        country: \"United Kingdom\",\n        has_vegetarian: true,\n        has_bike_racks: true,\n        has_outdoor_seating: true,\n        coffee_rating: 4,\n        food_rating: 4,\n        value_rating: 4,\n        overall_rating: 4,\n        last_updated: \"2025-02-25\"\n      });\n    }\n    \n    // Add Charlie Friday's Coffee Shop\n    if (otherCafes.find(cafe => cafe.name === \"Charlie Friday's Coffee Shop\")) {\n      cafes.push({\n        name: \"Charlie Friday's Coffee Shop\",\n        description: \"Cozy coffee shop popular with cyclists offering specialty coffee and homemade treats\",\n        city: \"Lyndhurst\",\n        region: \"Hampshire\",\n        country: \"United Kingdom\",\n        has_vegetarian: true,\n        has_gluten_free: true,\n        has_bike_racks: true,\n        coffee_rating: 5,\n        food_rating: 4,\n        value_rating: 4,\n        overall_rating: 4,\n        last_updated: \"2025-02-25\"\n      });\n    }\n    \n    // Add Storm in a Teacup Boat Cafe\n    if (otherCafes.find(cafe => cafe.name === \"Storm in a Teacup Boat Cafe\")) {\n      cafes.push({\n        name: \"Storm in a Teacup Boat Cafe\",\n        description: \"Unique floating cafe on a narrowboat offering tea, coffee and homemade cakes\",\n        city: \"Stratford-upon-Avon\",\n        region: \"Warwickshire\",\n        country: \"United Kingdom\",\n        has_vegetarian: true,\n        has_outdoor_seating: true,\n        coffee_rating: 4,\n        food_rating: 4,\n        value_rating: 3,\n        overall_rating: 4,\n        last_updated: \"2025-02-25\"\n      });\n    }\n  }\n}\n\n// Add a debug log to see the cleaned data structure\nconsole.log('Cleaned cafe data:', JSON.stringify(cafes, null, 2));\n\n// Return the extracted cafe data\nreturn cafes.map(cafe => ({ json: cafe }));"
+      },
+      "name": "Transform-CafeData"
+    },
+    {
+      "id": "3",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 1,
+      "position": [500, 200],
+      "credentials": {
+        "postgres": {
+          "id": "postgres-credentials",
+          "name": "Postgres Account"
+        }
+      },
+      "parameters": {
+        "operation": "insert",
+        "schema": "public",
+        "table": "cycling_cafes",
+        "columns": {
+          "values": [
+            {
+              "column": "name",
+              "value": "={{ $json.name }}"
+            },
+            {
+              "column": "description",
+              "value": "={{ $json.description }}"
+            },
+            {
+              "column": "address",
+              "value": "={{ $json.address || null }}"
+            },
+            {
+              "column": "city",
+              "value": "={{ $json.city || null }}"
+            },
+            {
+              "column": "region",
+              "value": "={{ $json.region || null }}"
+            },
+            {
+              "column": "postal_code",
+              "value": "={{ $json.postal_code || null }}"
+            },
+            {
+              "column": "country",
+              "value": "={{ $json.country || 'United Kingdom' }}"
+            },
+            {
+              "column": "phone",
+              "value": "={{ $json.phone || null }}"
+            },
+            {
+              "column": "website",
+              "value": "={{ $json.website || null }}"
+            },
+            {
+              "column": "instagram_url",
+              "value": "={{ $json.instagram_url || null }}"
+            },
+            {
+              "column": "facebook_url",
+              "value": "={{ $json.facebook_url || null }}"
+            },
+            {
+              "column": "opening_hours",
+              "value": "={{ $json.opening_hours || null }}"
+            },
+            {
+              "column": "has_vegetarian",
+              "value": "={{ $json.has_vegetarian || false }}"
+            },
+            {
+              "column": "has_gluten_free",
+              "value": "={{ $json.has_gluten_free || false }}"
+            },
+            {
+              "column": "has_bike_racks",
+              "value": "={{ $json.has_bike_racks || false }}"
+            },
+            {
+              "column": "has_outdoor_seating",
+              "value": "={{ $json.has_outdoor_seating || false }}"
+            },
+            {
+              "column": "menu_highlights",
+              "value": "={{ $json.menu_highlights || null }}"
+            },
+            {
+              "column": "coffee_rating",
+              "value": "={{ $json.coffee_rating || null }}"
+            },
+            {
+              "column": "food_rating",
+              "value": "={{ $json.food_rating || null }}"
+            },
+            {
+              "column": "value_rating",
+              "value": "={{ $json.value_rating || null }}"
+            },
+            {
+              "column": "overall_rating",
+              "value": "={{ $json.overall_rating || null }}"
+            },
+            {
+              "column": "notes",
+              "value": "={{ $json.notes || null }}"
+            },
+            {
+              "column": "last_updated",
+              "value": "={{ $json.last_updated || $now }}"
+            }
+          ]
+        }
+      },
+      "name": "Insert-CafeData"
+    },
+    {
+      "id": "4",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [700, 200],
+      "parameters": {},
+      "name": "Success-Output"
+    },
+    {
+      "id": "5",
+      "type": "n8n-nodes-base.errorTrigger",
+      "typeVersion": 1,
+      "position": [500, 400],
+      "parameters": {
+        "errorMessage": "An error occurred during data processing."
+      },
+      "name": "Notify-Error"
+    },
+    {
+      "id": "6",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [700, 400],
+      "credentials": {
+        "smtp": {
+          "id": "smtp-credentials",
+          "name": "SMTP Account"
+        }
+      },
+      "parameters": {
+        "fromEmail": "notifications@cakerider.uk",
+        "toEmail": "admin@cakerider.uk",
+        "subject": "Error in Cycling Cafe Data Import",
+        "text": "=An error occurred while importing cycling cafe data: {{ $node[\"Notify-Error\"].json.errorMessage }}"
+      },
+      "name": "Send-ErrorNotification"
+    }
+  ],
+  "connections": {
+    "Fetch-ScrapedData": {
+      "main": [
+        [
+          { "node": "Transform-CafeData", "type": "main" }
+        ],
+        [
+          { "node": "Notify-Error", "type": "error" }
+        ]
+      ]
+    },
+    "Transform-CafeData": {
+      "main": [
+        [
+          { "node": "Insert-CafeData", "type": "main" }
+        ],
+        [
+          { "node": "Notify-Error", "type": "error" }
+        ]
+      ]
+    },
+    "Insert-CafeData": {
+      "main": [
+        [
+          { "node": "Success-Output", "type": "main" }
+        ],
+        [
+          { "node": "Notify-Error", "type": "error" }
+        ]
+      ]
+    },
+    "Notify-Error": {
+      "main": [
+        [
+          { "node": "Send-ErrorNotification", "type": "main" }
+        ]
+      ]
+    }
+  }
+} 

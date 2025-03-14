@@ -1,0 +1,514 @@
+{
+    "nodes": [
+      {
+        "parameters": {
+          "url": "https://www.cakerider.uk/sitemap.xml",
+          "options": {}
+        },
+        "id": "27298917-5c32-40d8-b718-fdf181497a77",
+        "name": "HTTP Request",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          160,
+          1340
+        ]
+      },
+      {
+        "parameters": {
+          "options": {}
+        },
+        "id": "a16e20b4-6395-4e5a-bac5-5530103ccf4e",
+        "name": "XML",
+        "type": "n8n-nodes-base.xml",
+        "typeVersion": 1,
+        "position": [
+          320,
+          1340
+        ]
+      },
+      {
+        "parameters": {
+          "fieldToSplitOut": "urlset.url",
+          "options": {}
+        },
+        "id": "76f1b4b1-9c3d-483a-b023-65a896d78596",
+        "name": "Split Out",
+        "type": "n8n-nodes-base.splitOut",
+        "typeVersion": 1,
+        "position": [
+          460,
+          1340
+        ],
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "amount": 1,
+          "unit": "minutes"
+        },
+        "id": "ed267e8d-56d9-4c2a-8211-c9bc2a82c123",
+        "name": "Wait",
+        "type": "n8n-nodes-base.wait",
+        "typeVersion": 1.1,
+        "position": [
+          1460,
+          1340
+        ],
+        "webhookId": "9af87c5e-b07f-48dc-9ca8-61b471a24cad"
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "=http://localhost:8000/crawl",
+          "sendBody": true,
+          "bodyParameters": {
+            "parameters": [
+              {
+                "name": "start_url",
+                "value": "={{ $json.loc }}"
+              },
+              {
+                "name": "max_depth",
+                "value": "2"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "855a2184-41cc-4408-86f0-eab4ef48c271",
+        "name": "HTTP Request1",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1200,
+          1340
+        ],
+        "executeOnce": true
+      },
+      {
+        "parameters": {
+          "url": "=http://192.168.0.63:8000/results/{{ $json.job_id }}",
+          "options": {
+            "timeout": 5000
+          }
+        },
+        "id": "5386b2d7-4021-41ae-bdc7-392902094686",
+        "name": "HTTP Request2",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          1680,
+          1340
+        ],
+        "retryOnFail": true,
+        "waitBetweenTries": 5000
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "9d90c1ce-590e-40a5-ae8c-d92326032975",
+                "leftValue": "={{ $json.status }}",
+                "rightValue": "completed",
+                "operator": {
+                  "type": "string",
+                  "operation": "equals"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "4ffd0ec0-40a0-457c-a398-7e7ca224ba93",
+        "name": "If",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2.2,
+        "position": [
+          1900,
+          1340
+        ]
+      },
+      {
+        "parameters": {
+          "chunkOverlap": 200
+        },
+        "id": "cd07b56b-5bb0-4b28-9834-525ecf975bbc",
+        "name": "Character Text Splitter",
+        "type": "@n8n/n8n-nodes-langchain.textSplitterCharacterTextSplitter",
+        "typeVersion": 1,
+        "position": [
+          2540,
+          1580
+        ]
+      },
+      {
+        "parameters": {
+          "model": "text-embedding-ada-002",
+          "options": {}
+        },
+        "id": "4c8b465b-83e2-4e50-a55b-1a2dc66514a6",
+        "name": "Embeddings OpenAI",
+        "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+        "typeVersion": 1.1,
+        "position": [
+          2340,
+          1520
+        ],
+        "credentials": {
+          "openAiApi": {
+            "id": "Ih7MFuPz1PDf9o8S",
+            "name": "OpenAi account 2"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "assignments": {
+            "assignments": [
+              {
+                "id": "f2bcdb54-e1fe-4670-99aa-6eec973bf5f1",
+                "name": "job_id",
+                "value": "={{ $json.job_id }}",
+                "type": "string"
+              }
+            ]
+          },
+          "options": {}
+        },
+        "id": "efece3b8-8394-4bdc-bd7e-be2a9c99ebb9",
+        "name": "Edit Fields",
+        "type": "n8n-nodes-base.set",
+        "typeVersion": 3.4,
+        "position": [
+          2140,
+          1540
+        ]
+      },
+      {
+        "parameters": {},
+        "id": "c7fd977d-d2a3-4903-8675-1865bacbbbc8",
+        "name": "When clicking ‘Test workflow’",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -40,
+          1340
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "strict",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "800b71f9-2e9e-46d3-8545-37cf9c7665d6",
+                "leftValue": "={{ $json.priority }}",
+                "rightValue": "=0.9",
+                "operator": {
+                  "type": "string",
+                  "operation": "contains"
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "type": "n8n-nodes-base.filter",
+        "typeVersion": 2.2,
+        "position": [
+          680,
+          1340
+        ],
+        "id": "cc849e20-e803-4372-bf07-cfa6853addfb",
+        "name": "Filter"
+      },
+      {
+        "parameters": {
+          "jsonMode": "expressionData",
+          "jsonData": "={{ $json.content }}",
+          "options": {
+            "metadata": {
+              "metadataValues": [
+                {
+                  "name": "url",
+                  "value": "={{ $json.url }}"
+                },
+                {
+                  "name": "title",
+                  "value": "={{ $json.title }}"
+                }
+              ]
+            }
+          }
+        },
+        "id": "63e8a647-5a04-4987-95a4-4aca88303348",
+        "name": "Default Data Loader2",
+        "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+        "typeVersion": 1,
+        "position": [
+          2460,
+          1380
+        ]
+      },
+      {
+        "parameters": {
+          "mode": "insert",
+          "tableName": {
+            "__rl": true,
+            "value": "=documents",
+            "mode": "id"
+          },
+          "options": {
+            "queryName": "match_documents"
+          }
+        },
+        "id": "0f09ed81-6927-4304-b0b4-cdae4efc5431",
+        "name": "Supabase Vector Store2",
+        "type": "@n8n/n8n-nodes-langchain.vectorStoreSupabase",
+        "typeVersion": 1,
+        "position": [
+          2320,
+          1120
+        ],
+        "credentials": {
+          "supabaseApi": {
+            "id": "jHQ9VqPhORyqWFWB",
+            "name": "Supabase account"
+          }
+        }
+      },
+      {
+        "parameters": {
+          "jsCode": "   // Extract data from crawler response\n   const crawlerData = $input.item.json;\n   \n   // Check if we have internal URLs data\n   if (crawlerData.urls && crawlerData.urls.internal && crawlerData.urls.internal.length > 0) {\n     const pageData = crawlerData.urls.internal[0].data;\n     \n     // Return the data in a format suitable for the Default Data Loader\n     return {\n       json: {\n         content: pageData.full_content,\n         url: crawlerData.urls.internal[0].url,\n         title: pageData.title\n       }\n     };\n   } else {\n     // No data to process\n     return {\n       json: {\n         error: \"No internal URLs found in crawler response\"\n       }\n     };\n   }"
+        },
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          2120,
+          1120
+        ],
+        "id": "aedbb051-2d71-4486-a158-8438cedb8064",
+        "name": "Code"
+      },
+      {
+        "parameters": {
+          "batchSize": 5,
+          "options": {}
+        },
+        "id": "025a42e2-b9cc-4bf8-9c43-c9f98abff4ad",
+        "name": "Loop_Over_Items",
+        "type": "n8n-nodes-base.splitInBatches",
+        "typeVersion": 3,
+        "position": [
+          920,
+          1340
+        ]
+      }
+    ],
+    "connections": {
+      "HTTP Request": {
+        "main": [
+          [
+            {
+              "node": "XML",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "XML": {
+        "main": [
+          [
+            {
+              "node": "Split Out",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Split Out": {
+        "main": [
+          [
+            {
+              "node": "Filter",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Wait": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request1": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "HTTP Request2": {
+        "main": [
+          [
+            {
+              "node": "If",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "If": {
+        "main": [
+          [
+            {
+              "node": "Code",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Edit Fields",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Character Text Splitter": {
+        "ai_textSplitter": [
+          [
+            {
+              "node": "Default Data Loader2",
+              "type": "ai_textSplitter",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Embeddings OpenAI": {
+        "ai_embedding": [
+          [
+            {
+              "node": "Supabase Vector Store2",
+              "type": "ai_embedding",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Edit Fields": {
+        "main": [
+          [
+            {
+              "node": "Wait",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "When clicking ‘Test workflow’": {
+        "main": [
+          [
+            {
+              "node": "HTTP Request",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Filter": {
+        "main": [
+          [
+            {
+              "node": "Loop_Over_Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Default Data Loader2": {
+        "ai_document": [
+          [
+            {
+              "node": "Supabase Vector Store2",
+              "type": "ai_document",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Supabase Vector Store2": {
+        "main": [
+          [
+            {
+              "node": "Loop_Over_Items",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Code": {
+        "main": [
+          [
+            {
+              "node": "Supabase Vector Store2",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Loop_Over_Items": {
+        "main": [
+          [],
+          [
+            {
+              "node": "HTTP Request1",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    },
+    "pinData": {},
+    "meta": {
+      "templateCredsSetupCompleted": true,
+      "instanceId": "68e9a21e4bf68db430b521ba85870b202f91aa4e752b15fa85601bfdb0c92106"
+    }
+  }

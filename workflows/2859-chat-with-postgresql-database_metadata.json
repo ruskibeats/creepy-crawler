@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "title": "Workflow information: Use workflow",
+    "description": "This workflow template is designed for any professionals seeking relevent data from database using natural language.",
+    "version": "1.1"
+  },
+  "nodes": [
+    {
+      "type": "Task",
+      "description": "Create a simple API endpoint using the Webhook and Respond to Webhook nodes\n\nWhy:\nYou can prototype or replace a backend process with a single workflow\n\nMain use cases:\nReplace backend logic with a workflow"
+    },
+    {
+      "type": "Task",
+      "description": "Merge two datasets into one based on matching rules\n\nWhy:\nA powerful capability of n8n is to easily branch out the workflow in order to process different datasets. Even more powerful is the ability to join them back together with SQL-like joining logic.\n\nMain use cases:\n Appending data sets\n Keep only new items\n Keep only existing items"
+    },
+    {
+      "type": "This workflow allows extracting data from multiple pages website.\n\nThe workflow",
+      "description": "1) Starts in a country list at https://www.theswiftcodes.com/browse-by-country/.\n2) Loads every country page (https://www.theswiftcodes.com/albania/)\n3) Paginates every page in the country page.\n4) Extracts data from the country page.\n5) Saves data to MongoDB.\n6) Paginates through all pages in all countries.\n\nIt uses getWorkflowStaticData('global') method to recover the next page (saved from the previous page), and it goes ahead with all the pages.\n\nThere is a first section where the countries list is recovered and extracted.\n\nLater, I try to read if a local cache page is available and I recover the cached page from the disk.\n\nFinally, I save data to MongoDB, and we paginate all the pages in the country and for all the countries.\n\nI have applied a cache system to save a visited page to n8n local disk. If I relaunch workflow, we check if a cache file exists to discard non-required requests to the webpage.\n\nIf the data present in the website changes, you can apply a Cron node to check the website once per week.\n\nFinally, before inserting data in MongoDB, the best way to avoid duplicates is to check that swift_code (the primary value of the collection) doesn't exist.\n\nI recommend using a proxy for all requests to avoid IP blocks. A good solution for proxy plus IP rotation is scrapoxy.io.\n\nThis workflow is perfect for small data requirements. If you need to scrape dynamic data, you can use a Headless browser or any other service.\n\nIf you want to scrape huge lists of URIs, I recommend using Scrapy + Scrapoxy."
+    }
+  ],
+  "n8n_template_details": "Chat with Postgresql DatabasePublished 1 month agoCreated byKumoHQCategoriesEngineeringProductAIIT OpsUse workflowFREE",
+  "n8n_template_description": "Template descriptionWho is this template for?This workflow template is designed for any professionals seeking relevent data from database using natural language.How it worksEach time user ask's question using the n8n chat interface, the workflow runs.Then the message is processed by AI Agent using relevent tools -Execute SQL Query,Get DB Schema and Tables ListandGet Table Definition, if required. Agent uses these tool to form and run sql query which are necessary to answer the questions.Once AI Agent has the data, it uses it to form answer and returns it to the user.Set up instructionsComplete the Set up credentials step when you first open the workflow. You'll need a Postgresql Credentials, and OpenAI api key.Template was created in n8nv1.77.0"
+}

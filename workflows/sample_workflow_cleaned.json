@@ -1,0 +1,51 @@
+{
+  "id": "example123",
+  "name": "My Test Workflow",
+  "nodes": [
+    {
+      "id": "node1",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        300,
+        80
+      ],
+      "parameters": {
+        "path": "receive-data"
+      },
+      "typeVersion": 1
+    },
+    {
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        500,
+        80
+      ],
+      "parameters": {
+        "url": "https://example.com/api",
+        "method": "POST",
+        "authentication": "none"
+      },
+      "id": "20031d40-3270-4722-a807-1dfdd20a0a7c",
+      "typeVersion": 1
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "active": false
+}

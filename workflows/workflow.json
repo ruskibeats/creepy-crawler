@@ -1,0 +1,74 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "filePath": "spreadsheet.xls"
+      },
+      "name": "Read Binary File",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "position": [
+        380,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "839d57c3-e81c-48e2-80e5-fe0d36708086"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "name": "Spreadsheet File1",
+      "type": "n8n-nodes-base.spreadsheetFile",
+      "position": [
+        530,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "aebbf5da-aa83-4965-8a91-6c481893f36c"
+    },
+    {
+      "parameters": {
+        "table": "product",
+        "columns": "name,ean",
+        "additionalFields": {}
+      },
+      "name": "Insert Rows1",
+      "type": "n8n-nodes-base.postgres",
+      "position": [
+        680,
+        240
+      ],
+      "typeVersion": 1,
+      "id": "8bbba54a-d7b3-4cd4-b51c-ff7c09c23660",
+      "credentials": {}
+    }
+  ],
+  "connections": {
+    "Read Binary File": {
+      "main": [
+        [
+          {
+            "node": "Spreadsheet File1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Spreadsheet File1": {
+      "main": [
+        [
+          {
+            "node": "Insert Rows1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "0c0c8e841d944db52e0dedfee1574f8ae8b974b9ee0e1b8ba5cd79e3481406b0"
+  }
+}
