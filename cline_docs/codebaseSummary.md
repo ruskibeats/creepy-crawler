@@ -110,25 +110,36 @@
 
 ## Recent Significant Changes
 
-1. **Template System Implementation**
+1. **Rate Limiting and Cooling Mechanisms**
+   - Implemented a token bucket rate limiter in `smart_queue.py` to control API request rates.
+   - Added jittered cooldown periods between batches to distribute requests evenly.
+   - Integrated dynamic backoff based on API response headers to handle rate limiting gracefully.
+   - Enhanced logging to track rate limit usage and cooldown periods for optimization.
+
+2. **Template System Implementation**
    - Added template-based workflow analysis
    - Created templates for different analysis types
    - Implemented template loading and rendering
 
-2. **Mistral AI Integration**
+3. **Mistral AI Integration**
    - Switched from OpenAI to Mistral models
    - Updated configuration to use model from settings
    - Modified code to support different models
 
-3. **Enhanced Node Analysis**
+4. **Enhanced Node Analysis**
    - Added explicit node type information
    - Improved node description quality
    - Ensured all nodes are covered in analysis
 
-4. **Documentation Updates**
+5. **Documentation Updates**
    - Created system architecture documentation
    - Updated project roadmap and task list
    - Documented technology stack and decisions
+
+6. **Resolved `SameFileError` Issue**
+   - Optimized file handling in `create_output_folder` function of `n8n_workflow_processor.py`
+   - Ensured proper directory structure enforcement
+   - Added error handling to prevent similar issues
 
 ## User Feedback Integration
 
